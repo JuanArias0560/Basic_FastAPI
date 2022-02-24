@@ -41,6 +41,19 @@ class Person(BaseModel):
     email : EmailStr = Field(...)
     http : HttpUrl = Field(...)
 
+    class Config:
+        schema_extra = {
+            "example":{
+                "first_name": "Juan",
+                "last_name" : "Arias Saldaña",
+                "age": 24,
+                "hair_color": "blonde",
+                "is_married" : True,
+                "email" : "juan@juan.com",
+                "http" : "http://juan.com"
+            }
+        }
+
 class Location(BaseModel):
     city  : str = Field(
         ...,
@@ -57,6 +70,14 @@ class Location(BaseModel):
         min_length=1,
         max_length=50,
         )
+    class Config:
+        schema_extra={
+            "example":{
+                "city": "Bogota",
+                "state" : "Cundinamarca",
+                "country" : "Colombia"
+            }
+        } 
 
 @app.get("/")
 def home():
