@@ -1,9 +1,8 @@
 #Python
-from operator import le
 from typing import Optional
 from enum import Enum
 #pydantic
-from pydantic import BaseModel , Field
+from pydantic import BaseModel , Field , EmailStr , HttpUrl
 #FastAPI
 from fastapi import FastAPI,Body, Path, Query 
 
@@ -39,11 +38,25 @@ class Person(BaseModel):
         )
     hair_color  : Optional[HairColor]  =  Field(default=None)
     is_married  : Optional[bool] =  Field(default=None)
+    email : EmailStr = Field(...)
+    http: HttpUrl = Field(...)
 
 class Location(BaseModel):
-    city  : str
-    state : str
-    country :str
+    city  : str = Field(
+        ...,
+        min_length=1,
+        max_length=50,
+        )
+    state : str= Field(
+        ...,
+        min_length=1,
+        max_length=50,
+        )
+    country :str= Field(
+        ...,
+        min_length=1,
+        max_length=50,
+        )
 
 @app.get("/")
 def home():
