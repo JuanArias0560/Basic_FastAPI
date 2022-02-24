@@ -19,31 +19,27 @@ class HairColor(Enum):
     red="red"
 
 
-class Person(BaseModel):
+class PersonBase(BaseModel):
 
     first_name  : str = Field(
         ...,
         min_length=1,
         max_length=50,
-        )
+    )
     last_name   : str = Field(
         ...,
         min_length=1,
         max_length=50,
-        )
+    )
     age         : int = Field(
         ...,
         gt=0,
         le=115
-        )
+    )
     hair_color  : Optional[HairColor]  =  Field(default=None)
     is_married  : Optional[bool] =  Field(default=None)
     email : EmailStr = Field(...)
-    http : HttpUrl = Field(...)
-    password: str = Field(
-        ...,
-        min_length=8
-        )
+    http : HttpUrl = Field(...)      
 
     class Config:
         schema_extra = {
@@ -55,45 +51,21 @@ class Person(BaseModel):
                 "is_married" : True,
                 "email" : "juan@juan.com",
                 "http" : "http://juan.com",
-                "password" : "A34F4qsr4"
+                "password":"Ju63bao345"
             }
         }
-
-class PersonOut(BaseModel):
-
-    first_name  : str = Field(
-        ...,
-        min_length=1,
-        max_length=50,
-        )
-    last_name   : str = Field(
-        ...,
-        min_length=1,
-        max_length=50,
-        )
-    age         : int = Field(
-        ...,
-        gt=0,
-        le=115
-        )
-    hair_color  : Optional[HairColor]  =  Field(default=None)
-    is_married  : Optional[bool] =  Field(default=None)
-    email : EmailStr = Field(...)
-    http : HttpUrl = Field(...)
     
 
-    class Config:
-        schema_extra = {
-            "example":{
-                "first_name": "Juan",
-                "last_name" : "Arias Saldaña",
-                "age": 24,
-                "hair_color": "blonde",
-                "is_married" : True,
-                "email" : "juan@juan.com",
-                "http" : "http://juan.com",                
-            }
-        }
+class Person(PersonBase):
+  
+    password: str = Field(
+        ...,
+        min_length=8,        
+        )
+
+
+class PersonOut(PersonBase):
+    pass
 
 
 class Location(BaseModel):
@@ -121,6 +93,7 @@ class Location(BaseModel):
             }
         } 
 
+
 @app.get("/")
 def home():
     return {"Hello": "World"}
@@ -128,7 +101,7 @@ def home():
 # Request and Response body 
 
 @app.post("/person/new",response_model=PersonOut)
-def create_person(person: Person = Body(...)): 
+def create_person(person: Person= Body(...)): 
     return person
 
 #Validations: Query Parameters
