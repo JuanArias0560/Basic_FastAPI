@@ -1,10 +1,11 @@
 #Python
+from email.policy import default
 from typing import Optional
 from enum import Enum
 #pydantic
 from pydantic import BaseModel , Field , EmailStr , HttpUrl
 #FastAPI
-from fastapi import FastAPI,Body, Path, Query , status
+from fastapi import FastAPI,Body, Path, Query , status,Form
 
 
 app = FastAPI()
@@ -86,6 +87,10 @@ class Location(BaseModel):
             }
         } 
 
+
+class LoginOut(BaseModel):
+    username: str = Field(...,max_length=20,example="JuanArias")
+    massage: str = Field(default="Login Succesfully")
 
 @app.get(
     path="/",
@@ -171,5 +176,11 @@ def update_person(
     result.update(location.dict())
     return result
 
-
+@app.post(
+    path="/login",
+    response_model=LoginOut,
+    status_code=status.HTTP_200_OK
+)
+def login(username: str = Form(...),password:str = Form(...) ):
+    return LoginOut(username=username)
 
