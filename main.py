@@ -4,7 +4,7 @@ from enum import Enum
 #pydantic
 from pydantic import BaseModel , Field , EmailStr , HttpUrl
 #FastAPI
-from fastapi import FastAPI,Body, Path, Query 
+from fastapi import FastAPI,Body, Path, Query , status
 
 
 app = FastAPI()
@@ -39,7 +39,12 @@ class PersonBase(BaseModel):
     hair_color  : Optional[HairColor]  =  Field(default=None)
     is_married  : Optional[bool] =  Field(default=None)
     email : EmailStr = Field(...)
-    http : HttpUrl = Field(...)      
+    http : HttpUrl = Field(...)
+    password: str = Field(
+        ...,
+        min_length=8,        
+        )
+
 
     class Config:
         schema_extra = {
@@ -55,18 +60,6 @@ class PersonBase(BaseModel):
             }
         }
     
-
-class Person(PersonBase):
-  
-    password: str = Field(
-        ...,
-        min_length=8,        
-        )
-
-
-class PersonOut(PersonBase):
-    pass
-
 
 class Location(BaseModel):
     city  : str = Field(
@@ -94,19 +87,30 @@ class Location(BaseModel):
         } 
 
 
-@app.get("/")
+@app.get(
+    path="/",
+    status_code=status.HTTP_200_OK
+    )
 def home():
     return {"Hello": "World"}
 
 # Request and Response body 
 
-@app.post("/person/new",response_model=PersonOut)
-def create_person(person: Person= Body(...)): 
+@app.post(
+    path="/person/new",
+    response_model=PersonBase,
+    response_model_exclude={"password"},
+    status_code=status.HTTP_201_CREATED
+    )
+def create_person(person: PersonBase= Body(...)): 
     return person
 
 #Validations: Query Parameters
 
-@app.get("/person/detail")
+@app.get(
+    path="/person/detail",
+    status_code=status.HTTP_200_OK
+    )
 def show_person(
     name:Optional[str]= Query(
         None,
@@ -128,7 +132,9 @@ def show_person(
 
 #Validataion: Path Parameters
 
-@app.get("/person/detail/{person_id}")
+@app.get(
+    path="/person/detail/{person_id}",
+    status_code=status.HTTP_200_OK)
 def show_person(
     person_id: int = Path(
         ..., 
@@ -143,7 +149,12 @@ def show_person(
 
 #Validations = Request Body
 
-@app.put("/person/{person_id}")
+@app.put(
+    path="/person/{person_id}",
+    response_model=PersonBase,
+    response_model_exclude={"password"},    
+    status_code=status.HTTP_202_ACCEPTED
+)
 def update_person(
     person_id: int =Path(
         ...,
@@ -152,7 +163,7 @@ def update_person(
         gt=0,
         example=12345
     ), 
-    person: Person = Body(...),
+    person: PersonBase = Body(...),
     location: Location = Body(...)
 
 ):
