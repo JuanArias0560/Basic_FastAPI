@@ -40,6 +40,10 @@ class Person(BaseModel):
     is_married  : Optional[bool] =  Field(default=None)
     email : EmailStr = Field(...)
     http : HttpUrl = Field(...)
+    password: str = Field(
+        ...,
+        min_length=8
+        )
 
     class Config:
         schema_extra = {
@@ -50,9 +54,47 @@ class Person(BaseModel):
                 "hair_color": "blonde",
                 "is_married" : True,
                 "email" : "juan@juan.com",
-                "http" : "http://juan.com"
+                "http" : "http://juan.com",
+                "password" : "A34F4qsr4"
             }
         }
+
+class PersonOut(BaseModel):
+
+    first_name  : str = Field(
+        ...,
+        min_length=1,
+        max_length=50,
+        )
+    last_name   : str = Field(
+        ...,
+        min_length=1,
+        max_length=50,
+        )
+    age         : int = Field(
+        ...,
+        gt=0,
+        le=115
+        )
+    hair_color  : Optional[HairColor]  =  Field(default=None)
+    is_married  : Optional[bool] =  Field(default=None)
+    email : EmailStr = Field(...)
+    http : HttpUrl = Field(...)
+    
+
+    class Config:
+        schema_extra = {
+            "example":{
+                "first_name": "Juan",
+                "last_name" : "Arias Saldaña",
+                "age": 24,
+                "hair_color": "blonde",
+                "is_married" : True,
+                "email" : "juan@juan.com",
+                "http" : "http://juan.com",                
+            }
+        }
+
 
 class Location(BaseModel):
     city  : str = Field(
@@ -85,7 +127,7 @@ def home():
 
 # Request and Response body 
 
-@app.post("/person/new")
+@app.post("/person/new",response_model=PersonOut)
 def create_person(person: Person = Body(...)): 
     return person
 
