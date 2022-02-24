@@ -1,11 +1,14 @@
 #Python
-from email.policy import default
 from typing import Optional
 from enum import Enum
+
 #pydantic
 from pydantic import BaseModel , Field , EmailStr , HttpUrl
+
 #FastAPI
-from fastapi import FastAPI,Body, Header, Path, Query, UploadFile , status,Form , Cookie,File
+from fastapi import FastAPI
+from fastapi import HTTPException
+from fastapi import Body, Header, Path, Query, UploadFile , status,Form , Cookie,File
 
 
 app = FastAPI()
@@ -136,7 +139,8 @@ def show_person(
  return {name:age}
 
 #Validataion: Path Parameters
-
+persons=[1,2,3,4,5,6
+]
 @app.get(
     path="/person/detail/{person_id}",
     status_code=status.HTTP_200_OK)
@@ -150,6 +154,12 @@ def show_person(
 
         )
 ):
+    if person_id not in persons:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="!this person doesn't exist!"
+        )
+
     return {person_id : "It Exists!"}
 
 #Validations = Request Body
@@ -229,3 +239,4 @@ def post_image(
         "Format": image.content_type,
         "Size(kb)": round(len( image.file.read())/1024,ndigits=2)
     }
+
