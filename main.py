@@ -39,7 +39,7 @@ class Person(BaseModel):
     hair_color  : Optional[HairColor]  =  Field(default=None)
     is_married  : Optional[bool] =  Field(default=None)
     email : EmailStr = Field(...)
-    http: HttpUrl = Field(...)
+    http : HttpUrl = Field(...)
 
 class Location(BaseModel):
     city  : str = Field(
